@@ -38,49 +38,13 @@
   var clothMass = 1;
   var clothSizeXY = 1;
   var clothSizeZ = 1;
-  var nxy = 2;
-  var nz = 10;
+  var nxy = 10;
+  var nz = 1;
   var mass = clothMass / (nxy*nz);
   var allData = [];
 
-    /*function loadCSV(targetFile){
-      // 読み込んだデータを1行ずつ格納する配列
-      //var allData = [];
-      // XMLHttpRequestの用意
-       var request = new XMLHttpRequest();
-       request.open("get", targetFile, false);
-       //request.open("get", targetFile, true);
-       request.overrideMimeType('sinking2/csv; charset=UTF-8');
-       request.send(null);
-
-       // 読み込んだCSVデータ
-       var csvData = request.responseText;
-       // CSVの全行を取得
-       var lines = csvData.split("\n");
-       for (var i = 0; i < lines.length; i++) {
-           // 1行ごとの処理
-           var wordSet = lines[i].split(",");
-           var wordData = {
-               px: ((parseFloat(wordSet[0]))),
-               py: ((parseFloat(wordSet[1]))),
-               pz: ((parseFloat(wordSet[2]))),
-           };
-           allData.push(wordData);
-       }
-       console.log(allData);
-    }
-    loadCSV("sinking2.csv");
-
-    // createXMLHttpRequest()
-    function createXMLHttpRequest() {
-      var XMLhttpObject = null;
-      XMLhttpObject = new XMLHttpRequest();
-      return XMLhttpObject;
-    }*/
-    // createXMLHttpRequest()-end
-
-    // clothFunction() 布の(u,v)位置の(x,y,z)座標を返す(ここでは円柱形)
-    function clothFunction(u, v) {
+    // 紐の(u,v)位置の(x,y,z)座標を返す
+    function kyokusenn(u, v) {
       var z = 0;
       var y = v;
       var x = u;
@@ -91,11 +55,9 @@
   if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
   var container;
   var camera, scene, renderer;
-  var clothGeometry;
+  //var clothGeometry;
   var sphe_geo;
   var particles = [];
-  var csvArray = [];
-  var csvArray2 = [];
   var world;
   initCannon();
   init();
@@ -111,12 +73,12 @@
     for ( var i = 0; i < nxy; i++ ) {
       particles.push([]);
       for ( var j = 0; j < nz; j++ ) {
-        var p = clothFunction(i/nxy, j/nz); // 布形状の3次元座標ベクトルp
+        var p = kyokusenn(i/nxy, j/nz); // 紐状の3次元座標ベクトルp
         //var particle = new CANNON.Particle(j==(nz-1) ? 0 : mass);
         var particle = new CANNON.Body({
           mass: j==(nz-1)? 0:mass
         });
-        particle.linearDamping = 0.5;
+        particle.linearDamping = 0.5; //ばね定数
         particle.position.set( p.x, p.y, p.z );
         particles[i].push( particle );
         world.addBody( particle );
@@ -170,9 +132,9 @@
     scene.add( light );
 
     function kyokusenn(){
-      var point01 = new THREE.Vector3(-6,0,0.1);
-      var point02 = new THREE.Vector3(0,-8.012,0.1);
-      var point03 = new THREE.Vector3(6,0,0.1);
+      var point01 = new THREE.Vector3(-6.0,0,0.1);
+      var point02 = new THREE.Vector3(1,-15.75,0.1);
+      var point03 = new THREE.Vector3(6.0,-16.0,0.1);
 
       var curve = new THREE.QuadraticBezierCurve3( point01, point02, point03 );
 
@@ -244,11 +206,6 @@
         }
       }
     }
-
-    //clothGeometry.computeFaceNormals();
-    //clothGeometry.computeVertexNormals();
-    //clothGeometry.normalsNeedUpdate = true;
-    //clothGeometry.verticesNeedUpdate = true;
     renderer.render( scene, camera );
   }
   // render()-end
